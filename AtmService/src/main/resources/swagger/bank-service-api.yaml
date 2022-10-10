@@ -1,0 +1,308 @@
+openapi: 3.0.1
+info:
+  title: 'Test Bank API '
+  description: Test
+  contact:
+    name: Gevorg Asatryan
+    url: ""
+    email: gev8919@gmail.com
+  version: 0.0.1-SNAPSHOT
+externalDocs:
+  description: Test
+  url: https://www.test.com/
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /api/auth/change-auth-secret:
+    put:
+      tags:
+        - auth-controller
+      operationId: changeAuthSecret
+      parameters:
+        - name: TOKEN
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeAuthTypeRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/card/withdrawal:
+    post:
+      tags:
+        - card-controller
+      operationId: withdrawal
+      parameters:
+        - name: TOKEN
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+  /api/card/deposit:
+    post:
+      tags:
+        - card-controller
+      operationId: deposit
+      parameters:
+        - name: TOKEN
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+  /api/auth/create-session:
+    post:
+      tags:
+        - auth-controller
+      operationId: createSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/auth/close-session:
+    post:
+      tags:
+        - auth-controller
+      operationId: closeSession
+      parameters:
+        - name: TOKEN
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+  /api/card/get-auth-type:
+    get:
+      tags:
+        - card-controller
+      operationId: getAuthType
+      parameters:
+        - name: cardNumber
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                enum:
+                  - PIN
+                  - FINGERPRINT
+  /api/card/card-data:
+    get:
+      tags:
+        - card-controller
+      operationId: getCard
+      parameters:
+        - name: TOKEN
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CardDto'
+  /api/auth/validate-token:
+    get:
+      tags:
+        - auth-controller
+      operationId: validateToken
+      parameters:
+        - name: TOKEN
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: boolean
+  /api/account/account-data:
+    get:
+      tags:
+        - account-controller
+      operationId: getAccountData
+      parameters:
+        - name: TOKEN
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Response'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountDto'
+components:
+  schemas:
+    Response:
+      type: object
+      properties:
+        result:
+          type: string
+          enum:
+            - OK
+            - FAIL
+    ChangeAuthTypeRequest:
+      type: object
+      properties:
+        authMethodeEnum:
+          type: string
+          enum:
+            - PIN
+            - FINGERPRINT
+        secret:
+          type: string
+    SessionRequest:
+      type: object
+      properties:
+        cardNumber:
+          type: string
+        secret:
+          type: string
+    CardDto:
+      type: object
+      properties:
+        cardNumber:
+          type: string
+        authMethode:
+          type: string
+          enum:
+            - PIN
+            - FINGERPRINT
+        balance:
+          type: number
+        state:
+          type: string
+          enum:
+            - ACTIVE
+            - BLOCKED
+    AccountDto:
+      type: object
+      properties:
+        accountNumber:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string

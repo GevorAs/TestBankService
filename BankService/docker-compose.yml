@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  bank-service:
+    depends_on:
+      - db-postgres
+    build: .
+    ports:
+      - "8085:8085"
+  db-postgres:
+    container_name: bankService-postgres
+    command: postgres -c 'max_connections=100'
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data:rw
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    hostname: bankService-postgres
+
+volumes:
+  postgres:
+    driver: local

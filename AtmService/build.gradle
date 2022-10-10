@@ -1,0 +1,90 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.openapitools:openapi-generator-gradle-plugin:5.4.0"
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'java'
+    id 'de.undercouch.download' version '3.2.0'
+
+}
+apply plugin: 'org.openapi.generator'
+
+group = 'com.agr'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.google.code.gson:gson:2.9.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
+    implementation 'io.gsonfire:gson-fire:1.8.5'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
+    implementation 'io.swagger:swagger-annotations:1.6.7'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
+
+    compileOnly 'org.projectlombok:lombok'
+
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+openApiGenerate {
+    generatorName = "java"
+    inputSpec = "$rootDir/src/main/resources/swagger/bank-service-api.yaml".toString()
+//    inputSpec = "${buildDir}/api-docs.yaml"//todo we can use link for download and generate swagger api interface
+    outputDir = "$buildDir/generated".toString()
+    apiPackage = "com.agr.atmservice.bankservice.api"
+    modelPackage = "com.agr.atmservice.bankservice.model"
+    skipValidateSpec = true
+    configOptions = [
+            dateLibrary: "resttemplate",
+    ]
+}
+
+//todo we can use link for download and generate swagger api interface
+//task downloadFile {
+//    doLast {
+//        download {
+//            src 'http://localhost:8085/v3/api-docs.yaml'
+//            dest buildDir
+//        }
+//    }
+//}
+//ext {
+//    Download = de.undercouch.gradle.tasks.download.Download
+//    download = download
+//}
+
+springBoot {
+    buildInfo()
+}
+//todo we can use link for download and generate swagger api interface
+//tasks.openApiGenerate.dependsOn tasks.downloadFile
+
+compileJava.dependsOn tasks.openApiGenerate
+sourceSets.main.java.srcDir "${openApiGenerate.outputDir.get()}/src/main/java"
+
