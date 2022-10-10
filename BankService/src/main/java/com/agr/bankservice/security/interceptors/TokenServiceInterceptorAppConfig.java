@@ -16,6 +16,7 @@ public class TokenServiceInterceptorAppConfig implements WebMvcConfigurer {
             "/api-docs/**",
             "/swagger-ui.html",
             "/swagger-ui/**",
+            "/v3/api-docs/**",
             "/v3/api-docs.yaml"
     };
 
